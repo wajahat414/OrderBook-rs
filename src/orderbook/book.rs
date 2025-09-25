@@ -105,6 +105,23 @@ where
                 time_in_force: *time_in_force,
                 extra_fields: T::default(),
             },
+            OrderType::Market {
+                id,
+                price,
+                quantity,
+                side,
+                timestamp,
+                time_in_force,
+                ..
+            } => OrderType::Market {
+                id: *id,
+                price: *price,
+                quantity: *quantity,
+                side: *side,
+                timestamp: *timestamp,
+                time_in_force: *time_in_force,
+                extra_fields: T::default(),
+            },
             OrderType::IcebergOrder {
                 id,
                 price,

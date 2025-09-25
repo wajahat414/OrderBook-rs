@@ -62,6 +62,23 @@ where
     /// Convert `OrderType<T>` to OrderType<()> for compatibility with current PriceLevel API
     pub fn convert_to_unit_type(&self, order: &OrderType<T>) -> OrderType<()> {
         match order {
+            OrderType::Market {
+                id,
+                price,
+                quantity,
+                side,
+                timestamp,
+                time_in_force,
+                ..
+            } => OrderType::Market {
+                id: *id,
+                price: *price,
+                quantity: *quantity,
+                side: *side,
+                timestamp: *timestamp,
+                time_in_force: *time_in_force,
+                extra_fields: (),
+            },
             OrderType::Standard {
                 id,
                 price,

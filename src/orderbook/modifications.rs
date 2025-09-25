@@ -21,6 +21,7 @@ pub trait OrderQuantity<T = ()> {
 impl<T> OrderQuantity<T> for OrderType<T> {
     fn quantity(&self) -> u64 {
         match self {
+            OrderType::Market { quantity, .. } => *quantity,
             OrderType::Standard { quantity, .. } => *quantity,
             OrderType::IcebergOrder {
                 visible_quantity, ..
@@ -37,6 +38,7 @@ impl<T> OrderQuantity<T> for OrderType<T> {
 
     fn total_quantity(&self) -> u64 {
         match self {
+            OrderType::Market { quantity, .. } => *quantity,
             OrderType::Standard { quantity, .. } => *quantity,
             OrderType::IcebergOrder {
                 visible_quantity,
@@ -57,7 +59,8 @@ impl<T> OrderQuantity<T> for OrderType<T> {
 
     fn set_quantity(&mut self, new_total_quantity: u64) {
         match self {
-            OrderType::Standard { quantity, .. }
+            OrderType::Market { quantity, .. }
+            | OrderType::Standard { quantity, .. }
             | OrderType::PostOnly { quantity, .. }
             | OrderType::TrailingStop { quantity, .. }
             | OrderType::PeggedOrder { quantity, .. }
@@ -139,6 +142,7 @@ where
 
                     // Update the price based on order type
                     match &mut new_order {
+                        OrderType::Market { price, .. } => *price = new_price,
                         OrderType::Standard { price, .. } => *price = new_price,
                         OrderType::IcebergOrder { price, .. } => *price = new_price,
                         OrderType::PostOnly { price, .. } => *price = new_price,
@@ -228,6 +232,7 @@ where
 
                     // Update the price based on order type
                     match &mut new_order {
+                        OrderType::Market { price, .. } => *price = new_price,
                         OrderType::Standard { price, .. } => *price = new_price,
                         OrderType::IcebergOrder { price, .. } => *price = new_price,
                         OrderType::PostOnly { price, .. } => *price = new_price,
@@ -305,6 +310,18 @@ where
                     // Update the order fields based on order type
                     match &mut new_order {
                         OrderType::Standard {
+                            id,
+                            price: p,
+                            quantity: q,
+                            side: s,
+                            ..
+                        } => {
+                            *id = order_id;
+                            *p = price;
+                            *q = quantity;
+                            *s = side;
+                        }
+                        OrderType::Market {
                             id,
                             price: p,
                             quantity: q,
